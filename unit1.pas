@@ -18,6 +18,8 @@ type
     MainMenu1: TMainMenu;
     Memo1: TMemo;
     MenuItem1: TMenuItem;
+    MenuItem10: TMenuItem;
+    MenuItem11: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
@@ -32,6 +34,7 @@ type
     ToolButton1: TToolButton;
     ToolButton2: TToolButton;
     ToolButton3: TToolButton;
+    ToolButton4: TToolButton;
     TrayIcon1: TTrayIcon;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
@@ -40,6 +43,8 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure ListBox1Click(Sender: TObject);
     procedure Memo1EditingDone(Sender: TObject);
+    procedure MenuItem10Click(Sender: TObject);
+    procedure MenuItem11Click(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
     procedure MenuItem3Click(Sender: TObject);
     procedure MenuItem4Click(Sender: TObject);
@@ -49,12 +54,14 @@ type
     procedure ToolButton1Click(Sender: TObject);
     procedure ToolButton2Click(Sender: TObject);
     procedure ToolButton3Click(Sender: TObject);
+    procedure ToolButton4Click(Sender: TObject);
 
   private
     procedure ReloadFiles();
     procedure SaveFile();
-    procedure DeleteFileSK();
+    procedure DeleteFileSK(mode: Integer);
     procedure NewFile();
+    procedure EditCaption();
   public
 
   end;
@@ -106,6 +113,16 @@ begin
  StatusBar1.SimpleText := FormatDateTime('dd.mm.yyyy, hh:nn:ss', now) + ' - Unsaved Changes';
 end;
 
+procedure TForm1.MenuItem10Click(Sender: TObject);
+begin
+   EditCaption();
+end;
+
+procedure TForm1.MenuItem11Click(Sender: TObject);
+begin
+  Form1.WindowState:= wsNormal;
+end;
+
 procedure TForm1.MenuItem2Click(Sender: TObject);
 begin
   SaveFile();
@@ -126,7 +143,7 @@ end;
 
 procedure TForm1.MenuItem5Click(Sender: TObject);
 begin
- DeleteFileSK();
+ DeleteFileSK(1);
 end;
 
 procedure TForm1.MenuItem8Click(Sender: TObject);
@@ -155,7 +172,12 @@ end;
 
 procedure TForm1.ToolButton3Click(Sender: TObject);
 begin
-  DeleteFileSK();
+  DeleteFileSK(1);
+end;
+
+procedure TForm1.ToolButton4Click(Sender: TObject);
+begin
+  EditCaption();
 end;
 
 procedure TForm1.Button1Click(Sender: TObject);
@@ -170,7 +192,7 @@ end;
 
 procedure TForm1.Button3Click(Sender: TObject);
 begin
- DeleteFileSK();
+ DeleteFileSK(1);
 end;
 
 
@@ -216,15 +238,22 @@ StatusBar1.SimpleText := FormatDateTime('dd.mm.yyyy, hh:nn:ss', now) + ' - File 
 ListBox1.ItemIndex := ListBox1.Items.IndexOf(lastSelection);
 end;
 
-procedure TForm1.DeleteFileSK();
+procedure TForm1.DeleteFileSK(mode: Integer);
 begin
-  if MessageDlg('Are you sure?', 'Do you want to delete this note?', mtConfirmation, [mbYes, mbNo],0) = mrYes then begin
+  if mode = 0 then begin
     DeleteFile(ExtractFilePath(Application.ExeName) + '/' + ListBox1.GetSelectedText + '.txt');
     ListBox1.Items.Delete(ListBox1.ItemIndex);
     Memo1.Clear;
     ReloadFiles();
     StatusBar1.SimpleText := FormatDateTime('dd.mm.yyyy, hh:nn:ss', now) + ' - File Deleted';
-  end;
+  end else if mode = 1 then
+    if MessageDlg('Are you sure?', 'Do you want to delete this note?', mtConfirmation, [mbYes, mbNo],0) = mrYes then begin
+      DeleteFile(ExtractFilePath(Application.ExeName) + '/' + ListBox1.GetSelectedText + '.txt');
+      ListBox1.Items.Delete(ListBox1.ItemIndex);
+      Memo1.Clear;
+      ReloadFiles();
+      StatusBar1.SimpleText := FormatDateTime('dd.mm.yyyy, hh:nn:ss', now) + ' - File Deleted';
+    end;
 end;
 
 procedure TForm1.NewFile();
@@ -237,6 +266,23 @@ if InputQuery('Name of new Note', 'Please enter a title for the new note:', FALS
    ListBox1.ItemIndex := ListBox1.Items.IndexOf(UserString);
    StatusBar1.SimpleText := FormatDateTime('dd.mm.yyyy, hh:nn:ss', now) + ' - New File Created: ' + UserString;
 end;
+end;
+
+procedure TForm1.EditCaption();
+var UserString: String;
+  index: String;
+begin
+ if  ListBox1.ItemIndex > -1 then begin
+   UserString := ListBox1.GetSelectedText;
+   index := UserString;
+   InputQuery('Edit Name', 'Please enter a title for the chosen note:', FALSE, UserString);
+   if index <> UserString then begin
+    ListBox1.Items[ListBox1.ItemIndex] := UserString;
+    SaveFile();
+    ListBox1.ItemIndex := ListBox1.Items.IndexOf(index);
+    DeleteFileSK(0);
+   end;
+ end;
 end;
 
 end.

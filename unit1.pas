@@ -206,14 +206,14 @@ begin
  FilteredNotes := TStringList.Create;
  DisplayNotes := TStringList.Create;
 
- FindAllFiles(ExistingNotes, ExtractFilePath(Application.ExeName), '*');
+ ExistingNotes:= FindAllFiles(ExtractFilePath(Application.ExeName), '*');
  DisplayNotes.Assign(ExistingNotes);
 
  for i:= 0 to DisplayNotes.Count - 1 do begin
      DisplayNotes.Strings[i] := ExtractFileName(ExistingNotes.Strings[i]);
-     fileExtension := copy(DisplayNotes.Strings[i], DisplayNotes.Strings[i].Length -3, 4);
+     fileExtension := copy(DisplayNotes.Strings[i], Length(DisplayNotes.Strings[i]) -3, 4);
      if fileExtension = '.txt' then begin
-        DisplayNotes.Strings[i] :=  copy(DisplayNotes.Strings[i], 0, DisplayNotes.Strings[i].Length -4);
+        DisplayNotes.Strings[i] :=  Copy(DisplayNotes.Strings[i], 0, Length(DisplayNotes.Strings[i]) -4);
         Form1.ListBox1.Items.Add(DisplayNotes.Strings[i]);
         FilteredNotes.Add(ExistingNotes.Strings[i]);
      end;

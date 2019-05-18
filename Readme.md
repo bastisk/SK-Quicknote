@@ -1,7 +1,7 @@
 # SK-Quicknote
 A simple notepad written in Pascal. 
 
-Compatible with all Lazarus supported platforms (as of 2019) as well as compatibility with older Systems from Windows 95 onwards.
+Compatible with all Lazarus supported platforms (as of 2019) as well as compatibility with older Systems from [Windows 95](https://github.com/bastisk/SK-Quicknote/tree/Windows98Support) onwards.
 
 ![](Screenshot.PNG)
 
